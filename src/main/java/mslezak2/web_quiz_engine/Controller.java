@@ -1,8 +1,6 @@
 package mslezak2.web_quiz_engine;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
@@ -18,6 +16,15 @@ public class Controller {
     @GetMapping("/api/quiz/{index}")
     private Question getQuestion(@PathVariable int index) {
         return questions.get(index);
+    }
+
+    @PostMapping("/api/quiz")
+    private AnswerFeedback postAnswer(@RequestParam int answer) {
+        if (answer == 2) {
+            return AnswerFeedback.POSITIVE_FEEDBACK;
+        } else {
+            return AnswerFeedback.NEGATIVE_FEEDBACK;
+        }
     }
 
 }
