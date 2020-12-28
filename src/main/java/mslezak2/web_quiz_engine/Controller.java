@@ -10,7 +10,7 @@ public class Controller {
 
     ArrayList<Question> questions = new ArrayList<>(); // it's going to be replaced with the database in the future
     {
-        questions.add(new Question("q1", "t1", new String[]{"a1","a2","a3","a4"})); // initializing list for testing purposes
+        questions.add(new Question("q1", "t1", new String[]{"a1","a2","a3","a4"}, 2)); // initializing list for testing purposes
     }
 
     @GetMapping("/api/quiz/{index}")
@@ -26,5 +26,12 @@ public class Controller {
             return AnswerFeedback.NEGATIVE_FEEDBACK;
         }
     }
-
+    
+    /**Method lets upload new questions defined by the user*/
+    @PostMapping("/api/quizzes")
+    private Question createQuestion(@RequestBody Question question) {
+        question.setId(questions.size()); //every question gets its unique id
+        questions.add(question);
+        return questions.get(questions.size() - 1);
+    }
 }
