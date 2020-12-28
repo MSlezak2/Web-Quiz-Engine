@@ -1,6 +1,8 @@
 package mslezak2.web_quiz_engine;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 
@@ -13,9 +15,20 @@ public class Controller {
         questions.add(new Question("q1", "t1", new String[]{"a1","a2","a3","a4"}, 2)); // initializing list for testing purposes
     }
 
-    @GetMapping("/api/quiz/{index}")
-    private Question getQuestion(@PathVariable int index) {
-        return questions.get(index);
+    @GetMapping("/api/quizzes/{id}")
+    private Question getQuestion(@PathVariable int id) {
+        if (id < questions.size()) {
+            return questions.get(id);
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "(not found)"
+            );
+        }
+    }
+    
+    @GetMapping("/api/quizzes")
+    private ArrayList<Question> getAllQuestions() {
+        return questions;
     }
 
     @PostMapping("/api/quiz")
@@ -30,6 +43,7 @@ public class Controller {
     /**Method lets upload new questions defined by the user*/
     @PostMapping("/api/quizzes")
     private Question createQuestion(@RequestBody Question question) {
+        //TODO: Is there any better way to handle that id setting?
         question.setId(questions.size()); //every question gets its unique id
         questions.add(question);
         return questions.get(questions.size() - 1);
