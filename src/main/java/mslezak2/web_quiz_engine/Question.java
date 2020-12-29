@@ -10,10 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * - array of options (the 3rd one is always the correct one)*/
 public class Question {
     
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int id;
+    
     private String title;
     private String text;
     private String[] options;
+    
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private int answer;
     
     public Question(String title, String text, String[] options, int answer) {
@@ -31,12 +35,12 @@ public class Question {
         return id;
     }
     
-    @JsonProperty
+//    @JsonProperty
     public void setAnswer(int answer) {
         this.answer = answer;
     }
     
-    @JsonIgnore
+//    @JsonIgnore
     public int getAnswer() {
         return answer;
     }
