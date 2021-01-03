@@ -1,5 +1,7 @@
 package mslezak2.web_quiz_engine;
 
+import mslezak2.web_quiz_engine.data.AnswerFeedback;
+import mslezak2.web_quiz_engine.data.Question;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,9 +16,9 @@ import java.util.HashMap;
 public class Controller {
 
     ArrayList<Question> questions = new ArrayList<>(); // it's going to be replaced with the database in the future
-    {
-        questions.add(new Question("q1", "t1", new String[]{"a1","a2","a3","a4"}, new int[]{2,3})); // initializing list for testing purposes
-    }
+//    {
+//        questions.add(new Question("q1", "t1", new String[]{"a1","a2","a3","a4"}, new int[]{2,3})); // initializing list for testing purposes
+//    }
 
     @GetMapping("/api/quizzes/{id}")
     private Question getQuestion(@PathVariable int id) {
@@ -37,30 +39,41 @@ public class Controller {
         
     }
     
-    /**
-     * POST request should contain JSON object inside its body with single property named "answer" with int
-     * as a value representing chosen answer
-     */
-    @PostMapping("/api/quizzes/{id}/solve")
-    private AnswerFeedback postAnswer(@PathVariable int id, @RequestBody HashMap<String, int[]> answer) {
-        if (id < questions.size()) {
-            // TODO: Should answer parameter be of that type? Is there any other, cooler solution?
-            
-            int[] postedAnswer = answer.get("answer");
-            int[] correctAnswer = questions.get(id).getAnswer();
-        
-            if (isAnswerCorrect(postedAnswer, correctAnswer)) {
-                return AnswerFeedback.POSITIVE_FEEDBACK;
-            } else {
-                return AnswerFeedback.NEGATIVE_FEEDBACK;
-            }
-        
-        } else {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "(not found)"
-            );
-        }
+    //TODO: Implement mechanism to convert answer from int[] to String (and vice versa)
+//    /**
+//     * POST request should contain JSON object inside its body with single property named "answer" with int
+//     * as a value representing chosen answer
+//     */
+//    @PostMapping("/api/quizzes/{id}/solve")
+//    private AnswerFeedback postAnswer(@PathVariable int id, @RequestBody HashMap<String, int[]> answer) {
+//
+//        if (id < questions.size()) {
+//            // TODO: Should answer parameter be of that type? Is there any other, cooler solution?
+//
+//            int[] postedAnswer = answer.get("answer");
+//            String correctAnswerString= questions.get(id).getAnswer();
+//            int[] correctAnswer = answerStringToIntArray(correctAnswerString);
+//
+//            if (isAnswerCorrect(postedAnswer, correctAnswer)) {
+//                return AnswerFeedback.POSITIVE_FEEDBACK;
+//            } else {
+//                return AnswerFeedback.NEGATIVE_FEEDBACK;
+//            }
+//
+//        } else {
+//            throw new ResponseStatusException(
+//                    HttpStatus.NOT_FOUND, "(not found)"
+//            );
+//        }
     
+//    }
+    
+    private int[] answerStringToIntArray(String correctAnswerString) {
+        int[] correctAnswer = new int[correctAnswerString.length()];
+        for (int i = 0; i < correctAnswerString.length(); i++) {
+            correctAnswer[i] = (int) correctAnswerString.charAt(i);
+        }
+        return correctAnswer;
     }
     
     /**Method lets upload new questions defined by the user*/

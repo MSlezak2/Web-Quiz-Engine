@@ -1,5 +1,9 @@
-package mslezak2.web_quiz_engine;
+package mslezak2.web_quiz_engine.data;
 
+
+import javax.persistence.Entity;
+
+//TODO: To replace it with an enum class
 
 /** Feedback to send back as JSON object to the user, after he submits the answer.
  * It consists of a boolean variable along with a String phrase that describe
