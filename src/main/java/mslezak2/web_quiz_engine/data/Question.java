@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 
 /** Class represents single question as a part of the quiz. It contains of:<br>
@@ -17,9 +18,9 @@ import java.util.List;
 public class Question {
     
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private int id;
+    private long id;
     
     @NotBlank
     private String title;
@@ -27,14 +28,13 @@ public class Question {
     @NotBlank
     private String text;
     
-    @Size(min = 2)
-    @OneToMany//(mappedBy = "option", cascade = CascadeType.REMOVE)
-    @JoinColumn(nullable = false)
-    private List<Option> options;
+    @Size(min = 2, max = 10)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "QUESTION_ID")
+    private List<Option> options = new ArrayList<>();
     
     /**Possible forms of an answer are: no option is correct / one option is correct / more than one is correct.<br>
-     * To make storing it in a database easier, the answer is represented as a String that contains of correct answers
-     * delimited with a colon*/
+     * To make storing it in a database easier, the answer is represented as a String that contains of correct answers*/
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String answer;
     
@@ -51,11 +51,15 @@ public class Question {
     
     }
     
+    public void setId(long id) {
+        this.id = id;
+    }
+    
     public void setId(int id) {
         this.id = id;
     }
     
-    public int getId() {
+    public long getId() {
         return id;
     }
     
@@ -88,9 +92,9 @@ public class Question {
     public void setText(String text) {
         this.text = text;
     }
-
     public void setOptions(List<Option> options) {
         this.options = options;
     }
-    
+
+
 }
