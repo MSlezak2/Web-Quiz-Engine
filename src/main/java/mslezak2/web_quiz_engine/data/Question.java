@@ -18,7 +18,7 @@ import java.util.List;
 public class Question {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     
@@ -47,7 +47,7 @@ public class Question {
         this.answer = answer;
     }
     
-    public Question() {
+    protected Question() {
     
     }
     

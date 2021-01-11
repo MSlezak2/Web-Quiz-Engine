@@ -19,7 +19,7 @@ public class WebQuizEngineApplication {
     
     //test
     @Bean
-    public CommandLineRunner demo(QuizRepository quizRepository) {
+    public CommandLineRunner demo(QuestionRepository questionRepository) {
         return (args) -> {
             List<Option> opt = new ArrayList<>();
             opt.add(new Option("option 1"));
@@ -30,8 +30,10 @@ public class WebQuizEngineApplication {
             opt2.add(new Option("option 4"));
             Question question1 = new Question("Tytul pytania 1","Tekst pytania 1",opt,"0");
             Question question2 = new Question("Tytul pytania 2","Tekst pytania 2",opt2,"1");
-            quizRepository.save(question1);
-            quizRepository.save(question2);
+            questionRepository.save(question1);
+            questionRepository.save(question2);
+            System.out.println(question1.getId() + "  " + question2.getId());
+            
         };
     }
 

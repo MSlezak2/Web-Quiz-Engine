@@ -17,7 +17,7 @@ public class Option {
         this.option = option;
     }
     
-    public Option() {
+    protected Option() {
     
     }
     
