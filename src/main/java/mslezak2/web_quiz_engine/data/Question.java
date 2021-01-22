@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Class represents single question as a part of the quiz. It contains of:<br>
  *  - unique id<br>
@@ -33,14 +34,13 @@ public class Question {
     @JoinColumn(name = "QUESTION_ID")
     private List<Option> options = new ArrayList<>();
     
-    /**Possible forms of an answer are: no option is correct / one option is correct / more than one is correct.<br>
-     * To make storing it in a database easier, the answer is represented as a String that contains of correct answers*/
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String answer;
+    @ElementCollection
+    private Set<Integer> answer;
     
     
     
-    public Question(String title, String text, List<Option> options, String answer) {
+    public Question(String title, String text, List<Option> options, Set<Integer> answer) {
         this.title = title;
         this.text = text;
         this.options = options;
@@ -64,12 +64,12 @@ public class Question {
     }
     
 //    @JsonProperty
-    public void setAnswer(String answer) {
+    public void setAnswer(Set<Integer> answer) {
         this.answer = answer;
     }
     
 //    @JsonIgnore
-    public String getAnswer() {
+    public Set<Integer> getAnswer() {
         return answer;
     }
     

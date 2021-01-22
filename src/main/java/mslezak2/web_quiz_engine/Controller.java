@@ -2,9 +2,8 @@ package mslezak2.web_quiz_engine;
 
 import mslezak2.web_quiz_engine.data.AnswerFeedback;
 import mslezak2.web_quiz_engine.data.Question;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -13,6 +12,8 @@ import java.util.*;
 @RestController
 public class Controller {
     
+    //TODO: Why is it not recommended? How to do that properly?
+    @Autowired
     QuestionRepository questionRepository;
 
     
@@ -22,15 +23,11 @@ public class Controller {
 //    }
 
     @GetMapping("/api/quizzes/{id}")
-    private Question getQuestion(@PathVariable int id) {
+    private Optional<Question> getQuestion(@PathVariable long id) {
+    
+        //TODO: Handle incorrect id (IndexOutOfBoundsException)
+        return questionRepository.findById(id);
         
-        if (id < questions.size()) {
-            return questions.get(id);
-        } else {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "(not found)"
-            );
-        }
     }
     
     @GetMapping("/api/quizzes")
@@ -46,62 +43,36 @@ public class Controller {
      * as a value representing chosen answer
      */
     @PostMapping("/api/quizzes/{id}/solve") //TODO: Is that HashMap as type of RequestBody OK, or is there any better way to do this?
-    private AnswerFeedback postAnswer(@PathVariable long id, @RequestBody HashMap<String, String> answer) {
-    
-        AnswerFeedback result = AnswerFeedback.NEGATIVE_FEEDBACK;
+    private AnswerFeedback postAnswer(@PathVariable long id, @RequestBody HashMap<String, Set<Integer>> answer) {
         
+        AnswerFeedback result = AnswerFeedback.NEGATIVE_FEEDBACK;
+    
         //fetching the question by provided id and its correct answer field
-        Question question;
         Optional<Question> questionOptional = questionRepository.findById(id);
+        
         if (questionOptional.isPresent()) {
-            
-            question = questionOptional.orElseThrow();
-            //TODO: Handle wrong id with suitable exception
-            String correctAnswer = question.getAnswer();
+    
+            Question question = questionOptional.orElseThrow();
+            //TODO: Handle wrong id with suitable exception (IndexOutOfBoundsException / NoSuchElementException)
+            Set<Integer> correctAnswer = question.getAnswer();
     
             //fetching posted answer and checking if it's correct
-            String postedAnswer = answer.get("answer");
-            if (Objects.equals(correctAnswer, postedAnswer)) {
+            Set<Integer> postedAnswer = answer.get("answer");
+            //TODO: Handle wrong format of the request
+            if (correctAnswer.equals(postedAnswer)) {
                 result = AnswerFeedback.POSITIVE_FEEDBACK;
             }
-            
+    
         }
-        
+    
         return result;
         
-//
-//        if (id < questions.size()) {
-//            // TODO: Should answer parameter be of that type? Is there any other, cooler solution?
-//
-//            int[] postedAnswer = answer.get("answer");
-//            String correctAnswerString= questions.get(id).getAnswer();
-//            int[] correctAnswer = answerStringToIntArray(correctAnswerString);
-//
-//            if (isAnswerCorrect(postedAnswer, correctAnswer)) {
-//                return AnswerFeedback.POSITIVE_FEEDBACK;
-//            } else {
-//                return AnswerFeedback.NEGATIVE_FEEDBACK;
-//            }
-//
-//        } else {
-//            throw new ResponseStatusException(
-//                    HttpStatus.NOT_FOUND, "(not found)"
-//            );
-//        }
-//
-    }
-    
-    private int[] answerStringToIntArray(String correctAnswerString) {
-        int[] correctAnswer = new int[correctAnswerString.length()];
-        for (int i = 0; i < correctAnswerString.length(); i++) {
-            correctAnswer[i] = (int) correctAnswerString.charAt(i);
-        }
-        return correctAnswer;
     }
     
     /**Method lets upload new questions defined by the user*/
     @PostMapping("/api/quizzes")
     private Question createQuestion(@Valid @RequestBody Question question) {
+        //TODO: Handle wrong format of request
         
         //TODO: Is there any more elegant way to handle that id setting?
         question.setId(questions.size()); //every question gets its unique id
@@ -111,17 +82,4 @@ public class Controller {
     }
     
     
-    private boolean isAnswerCorrect(int[] postedAnswer, int[] correctAnswer) {
-        
-        boolean correct = false;
-        if (Arrays.equals(postedAnswer, correctAnswer)
-            || (postedAnswer == null && correctAnswer.length == 0)
-            || (postedAnswer.length == 0 && correctAnswer == null) ) {
-            
-            correct = true;
-            
-        }
-        return correct;
-        
-    }
 }

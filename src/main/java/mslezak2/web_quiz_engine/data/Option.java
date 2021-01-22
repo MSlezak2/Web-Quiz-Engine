@@ -1,5 +1,7 @@
 package mslezak2.web_quiz_engine.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
@@ -7,8 +9,8 @@ import javax.validation.constraints.NotBlank;
 public class Option {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    //@JsonIgnore
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private long id;
     @NotBlank
     private String option;
