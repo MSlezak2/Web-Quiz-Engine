@@ -3,7 +3,9 @@ package mslezak2.web_quiz_engine;
 import mslezak2.web_quiz_engine.data.AnswerFeedback;
 import mslezak2.web_quiz_engine.data.Question;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -23,17 +25,17 @@ public class Controller {
 //    }
 
     @GetMapping("/api/quizzes/{id}")
-    private Optional<Question> getQuestion(@PathVariable long id) {
-    
-        //TODO: Handle incorrect id (IndexOutOfBoundsException)
-        return questionRepository.findById(id);
+    private Question getQuestion(@PathVariable long id) {
+        
+        //TODO: Handle incorrect id (NoSuchElementException)
+        return questionRepository.findById(id).orElseThrow();
         
     }
     
     @GetMapping("/api/quizzes")
     private ArrayList<Question> getAllQuestions() {
         
-        return questions;
+        return (ArrayList<Question>) questionRepository.findAll();
         
     }
     
@@ -48,23 +50,18 @@ public class Controller {
         AnswerFeedback result = AnswerFeedback.NEGATIVE_FEEDBACK;
     
         //fetching the question by provided id and its correct answer field
-        Optional<Question> questionOptional = questionRepository.findById(id);
+        Question question = questionRepository.findById(id).orElseThrow();
         
-        if (questionOptional.isPresent()) {
-    
-            Question question = questionOptional.orElseThrow();
-            //TODO: Handle wrong id with suitable exception (IndexOutOfBoundsException / NoSuchElementException)
-            Set<Integer> correctAnswer = question.getAnswer();
-    
-            //fetching posted answer and checking if it's correct
-            Set<Integer> postedAnswer = answer.get("answer");
-            //TODO: Handle wrong format of the request
-            if (correctAnswer.equals(postedAnswer)) {
-                result = AnswerFeedback.POSITIVE_FEEDBACK;
-            }
-    
+        //TODO: Handle wrong id with suitable exception (IndexOutOfBoundsException / NoSuchElementException)
+        Set<Integer> correctAnswer = question.getAnswer();
+
+        //fetching posted answer and checking if it's correct
+        Set<Integer> postedAnswer = answer.get("answer");
+        //TODO: Handle wrong format of the request
+        if (correctAnswer.equals(postedAnswer)) {
+            result = AnswerFeedback.POSITIVE_FEEDBACK;
         }
-    
+        
         return result;
         
     }
@@ -72,14 +69,11 @@ public class Controller {
     /**Method lets upload new questions defined by the user*/
     @PostMapping("/api/quizzes")
     private Question createQuestion(@Valid @RequestBody Question question) {
-        //TODO: Handle wrong format of request
+        //TODO: Handle wrong format of request etc.
         
-        //TODO: Is there any more elegant way to handle that id setting?
-        question.setId(questions.size()); //every question gets its unique id
-        questions.add(question);
-        return questions.get(questions.size() - 1);
+        questionRepository.save(question);
+        return question;
         
     }
-    
     
 }

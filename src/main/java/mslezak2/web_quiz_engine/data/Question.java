@@ -34,6 +34,7 @@ public class Question {
     @JoinColumn(name = "QUESTION_ID")
     private List<Option> options = new ArrayList<>();
     
+    //TODO: Correct answers should not exceed the amount of options
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ElementCollection
     private Set<Integer> answer;
